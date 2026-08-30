@@ -1451,7 +1451,7 @@
      3. The sheet's first row must be a header row with these exact
         column names (any order): Date, Title, Category, Content.
      ------------------------------------------------------------------ */
-  const SHEET_CSV_URL = "YOUR_GOOGLE_SHEET_CSV_URL_HERE";
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUe0vE82J8OA5lZosQEM4E5c5rVDSecBIgaQhIdXZSqH7H3FMFh0ndYqXnaXPPUi8LT1ogBUM42R8i/pub?gid=0&single=true&output=csv";
   const MAX_UPDATES = 6; // how many cards to show, most recent first
   const LAST_SEEN_KEY = 'barkatUpdatesLastSeen'; // localStorage key: ISO date of the newest update the visitor has seen
 
@@ -1805,6 +1805,18 @@
       if (cleaned !== engPhoneEl.value) engPhoneEl.value = cleaned;
     });
 
+    // Same Google Sheets logging endpoint used by the booking modal —
+    // fire-and-forget, runs alongside the email send.
+    const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbytDnThKIMwttG_AzZiC8BroWMh0vVFbnCf_aM6DJVg3WTLTixZWiBFFffILRWHLaHS/exec';
+    function logToSheet(payload){
+      fetch(SHEET_WEBAPP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      }).catch(function(err){ console.error('Sheet log failed:', err); });
+    }
+
     // Inline feedback: flag a required field the moment the person leaves it
     // empty/invalid, and clear that flag as soon as they start correcting it —
     // rather than only surfacing errors on submit.
@@ -1838,6 +1850,16 @@
       submitBtn.classList.add('is-loading');
       submitBtn.disabled = true;
       submitLabel.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>Sending...';
+
+      logToSheet({
+        formType: 'inquiry',
+        name: name,
+        phone: phone,
+        email: email,
+        sector: sector,
+        scope: scope,
+        details: details || 'Not provided'
+      });
 
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         from_name: name,
@@ -3087,6 +3109,21 @@
   const EMAILJS_SERVICE_ID  = 'service_a11lg3q';
   const EMAILJS_TEMPLATE_ID = 'template_86yex7f';
 
+  // Google Sheets logging endpoint (Apps Script Web App) — fire-and-forget,
+  // runs alongside the email send so a lead is never lost even if one
+  // channel has a hiccup. mode:'no-cors' is required because Apps Script
+  // doesn't answer CORS preflight requests; the response is unreadable
+  // (opaque) but the write still happens server-side.
+  const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbytDnThKIMwttG_AzZiC8BroWMh0vVFbnCf_aM6DJVg3WTLTixZWiBFFffILRWHLaHS/exec';
+  function logToSheet(payload){
+    fetch(SHEET_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    }).catch(function(err){ console.error('Sheet log failed:', err); });
+  }
+
   const apptNameEl = document.getElementById('appt-name');
   const apptPhoneEl = document.getElementById('appt-phone');
   const apptDateEl = document.getElementById('appt-date');
@@ -3189,6 +3226,14 @@
 
     apptSubmitBtn.disabled = true;
     apptSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Booking…';
+
+    logToSheet({
+      formType: 'booking',
+      name: name,
+      phone: phone,
+      date: date,
+      time: time
+    });
 
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       from_name: name,
