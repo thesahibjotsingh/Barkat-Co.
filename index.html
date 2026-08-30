@@ -858,19 +858,19 @@
 
       <div class="absolute left-0 top-4 card-glass rounded-2xl px-6 py-5 w-56 float-a">
         <p class="text-[11px] uppercase tracking-widest text-forest-600 font-semibold">Cleared To Date</p>
-        <p class="text-[30px] font-semibold gold-text mt-1">₹128 Cr+</p>
+        <p class="text-[30px] font-semibold gold-text mt-1"><span class="stat-count" data-count-target="128" data-count-prefix="₹" data-count-suffix=" Cr+">₹128 Cr+</span></p>
         <p class="text-fog text-[12px] mt-1">Subsidy &amp; incentive value</p>
       </div>
 
       <div class="absolute right-0 top-32 card-glass rounded-2xl px-6 py-5 w-52 float-b">
         <p class="text-[11px] uppercase tracking-widest text-forest-600 font-semibold">DPRs Filed</p>
-        <p class="text-[30px] font-semibold gold-text mt-1">460+</p>
+        <p class="text-[30px] font-semibold gold-text mt-1"><span class="stat-count" data-count-target="460" data-count-suffix="+">460+</span></p>
         <p class="text-fog text-[12px] mt-1">Bankable project reports</p>
       </div>
 
       <div class="absolute left-10 bottom-2 card-glass rounded-2xl px-6 py-5 w-56 float-c">
         <p class="text-[11px] uppercase tracking-widest text-forest-600 font-semibold">Approval Rate</p>
-        <p class="text-[30px] font-semibold gold-text mt-1">98.2%</p>
+        <p class="text-[30px] font-semibold gold-text mt-1"><span class="stat-count" data-count-target="98.2" data-count-decimals="1" data-count-suffix="%">98.2%</span></p>
         <p class="text-fog text-[12px] mt-1">Across state &amp; central schemes</p>
       </div>
     </div>
@@ -1417,7 +1417,7 @@
             <p class="text-[13px] text-fog leading-relaxed">Complete lifecycle execution from DPR to disbursal</p>
           </div>
           <div class="stat-callout stat-callout--secondary rounded-2xl border border-hair bg-mist p-6">
-            <p class="text-[28px] font-semibold mb-1.5 tracking-tight" style="color:#A9821B;">4</p>
+            <p class="text-[28px] font-semibold mb-1.5 tracking-tight" style="color:#A9821B;"><span class="stat-count" data-count-target="4">4</span></p>
             <p class="text-[13px] text-fog leading-relaxed">Sectors actively served</p>
           </div>
         </div>
@@ -1452,7 +1452,7 @@
             <p class="text-[10.5px] text-fog leading-snug">Complete lifecycle execution from DPR to disbursal</p>
           </div>
           <div class="stat-callout stat-callout--secondary rounded-xl border border-hair bg-mist p-3.5">
-            <p class="text-[18px] font-semibold mb-1 tracking-tight leading-tight" style="color:#A9821B;">4</p>
+            <p class="text-[18px] font-semibold mb-1 tracking-tight leading-tight" style="color:#A9821B;"><span class="stat-count" data-count-target="4">4</span></p>
             <p class="text-[10.5px] text-fog leading-snug">Sectors actively served</p>
           </div>
         </div>
@@ -3078,6 +3078,62 @@
     document.addEventListener('DOMContentLoaded', function(){
       window.initScrollReveal();
     });
+  })();
+</script>
+
+<script>
+  /* ==========================================================================
+     STAT COUNTERS — animates hero and About-section stat numbers counting up
+     from 0 to their target value once scrolled into view. Elements opt in via
+     class="stat-count" with data-count-target (required), data-count-prefix,
+     data-count-suffix, and data-count-decimals (all optional). The element's
+     own text is the no-JS / pre-animation fallback value.
+     ========================================================================== */
+  (function(){
+    const counters = document.querySelectorAll('.stat-count');
+    if (!counters.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function formatValue(el, value){
+      const decimals = parseInt(el.dataset.countDecimals || '0', 10);
+      const prefix = el.dataset.countPrefix || '';
+      const suffix = el.dataset.countSuffix || '';
+      return prefix + value.toFixed(decimals) + suffix;
+    }
+
+    function animateCounter(el){
+      const target = parseFloat(el.dataset.countTarget);
+      if (isNaN(target)) return;
+      if (reduceMotion){
+        el.textContent = formatValue(el, target);
+        return;
+      }
+      const duration = 1400;
+      const startTime = performance.now();
+      function step(now){
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        el.textContent = formatValue(el, target * eased);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    if (reduceMotion || !('IntersectionObserver' in window)){
+      counters.forEach(animateCounter);
+      return;
+    }
+
+    const io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          animateCounter(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach(function(el){ io.observe(el); });
   })();
 </script>
 </body>
