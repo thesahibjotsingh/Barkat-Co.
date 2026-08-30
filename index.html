@@ -676,6 +676,19 @@
     display: block;
     opacity: 1;
   }
+
+  /* ---- Home icon: only useful once the logo has shrunk and the header
+     no longer has an obvious "go home" tap target on mobile. Hidden while
+     nav-big (top of page); fades in once scrolled. ---- */
+  #home-trigger-mobile{
+    display: none;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  #site-nav:not(.nav-big) #home-trigger-mobile{
+    display: flex;
+    opacity: 1;
+  }
 </style>
 </head>
 <body class="font-sf text-ink antialiased">
@@ -733,6 +746,11 @@
       </div>
 
       <div class="flex xl:hidden items-center gap-1">
+        <a href="#top" id="home-trigger-mobile" aria-label="Go to homepage"
+          class="w-9 h-9 flex items-center justify-center text-navy-900 text-[18px]">
+          <i class="fa-solid fa-house"></i>
+        </a>
+
         <button id="search-trigger-mobile" type="button" aria-label="Search the site"
           class="w-9 h-9 flex items-center justify-center text-navy-900 text-[18px]">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -855,17 +873,24 @@
     { icon:'fa-building-columns', title:'Finance & Other Services', text:'Barkat & Co. offers expert finance and other services to help small businesses grow.', slug:'finance-and-other-services' },
     { icon:'fa-chart-line',       title:'IPO Advisory',             text:'Barkat & Co. guides promoters through Main Board & SME IPO listings from readiness to compliance.', slug:'ipo-advisory' }
   ];
-  document.getElementById('help-grid').innerHTML = HELP_CARDS.map(c => `
+  document.getElementById('help-grid').innerHTML = HELP_CARDS.map((c, i) => {
+    const tint = [
+      { bg:'#E1F5EA', fg:'#177245' },
+      { bg:'#E6F1FB', fg:'#0C5B9C' },
+      { bg:'#FBF0D9', fg:'#8A6A10' }
+    ][i % 3];
+    return `
     <div class="help-card flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white">
-      <div class="w-16 h-16 rounded-2xl bg-navy-900/5 flex items-center justify-center mb-5">
-        <i class="fa-solid ${c.icon} text-navy-800 text-2xl"></i>
+      <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-5" style="background:${tint.bg};">
+        <i class="fa-solid ${c.icon} text-3xl" style="color:${tint.fg};"></i>
       </div>
       <h3 class="text-[17px] font-semibold text-navy-900 mb-2">${c.title}</h3>
       <p class="text-fog text-[14.5px] leading-relaxed mb-6">${c.text}</p>
       <a data-slugpath="${c.slug}" class="menu-link btn-gold font-semibold text-[14px] px-5 py-2.5 rounded-full inline-flex items-center gap-2 mt-auto" href="#${c.slug}">
         Explore <i class="fa-solid fa-circle-arrow-right"></i>
       </a>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Dot indicators for the mobile swipe view; hidden entirely at sm+ via the
   // "hidden sm:hidden" wrapper class above, so this only matters on phones.
