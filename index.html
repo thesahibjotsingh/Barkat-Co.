@@ -112,6 +112,62 @@
   }
 
   /* ==========================================================================
+     FLOATING CONTACT PILL — the WhatsApp FAB toggles a vertical pill of
+     contact channels (Phone, Message, Email, WhatsApp) instead of linking
+     straight out. Collapsed by default; #fab-contact.is-open reveals it.
+     ========================================================================== */
+  #fab-contact-pill{
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+    transition: max-height .22s cubic-bezier(0.16,1,0.3,1), opacity .18s ease, margin-bottom .22s cubic-bezier(0.16,1,0.3,1);
+  }
+  #fab-contact.is-open #fab-contact-pill{
+    max-height: 280px;
+    opacity: 1;
+    margin-bottom: 12px;
+    pointer-events: auto;
+  }
+  .fab-pill-item{
+    width: 56px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    color: #0A1730;
+    border-top: 1px solid rgba(10,23,48,0.07);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .16s ease, transform .16s ease, background-color .2s ease;
+  }
+  .fab-pill-item:first-child{ border-top: none; }
+  .fab-pill-item:hover{ background-color: #F5F5F7; }
+  #fab-contact.is-open .fab-pill-item{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #fab-contact.is-open .fab-pill-item:nth-child(1){ transition-delay: 15ms; }
+  #fab-contact.is-open .fab-pill-item:nth-child(2){ transition-delay: 30ms; }
+  #fab-contact.is-open .fab-pill-item:nth-child(3){ transition-delay: 45ms; }
+  #fab-contact.is-open .fab-pill-item:nth-child(4){ transition-delay: 60ms; }
+  #fab-toggle{
+    transition: background-color .2s ease, transform .2s cubic-bezier(0.16,1,0.3,1);
+  }
+  #fab-contact.is-open #fab-toggle{
+    background-color: #0A1730;
+  }
+  #fab-contact.is-open #fab-toggle:hover{
+    background-color: #0A1730;
+  }
+  #fab-contact.is-open #fab-toggle .fab-icon-default{ display: none; }
+  #fab-contact.is-open #fab-toggle .fab-icon-close{ display: block !important; }
+  @media (prefers-reduced-motion: reduce){
+    #fab-contact-pill, .fab-pill-item{ transition: none; }
+  }
+
+  /* ==========================================================================
      GOLD HIGHLIGHT — numbered step / subheading titles
      Shared by every dynamic content generator that renders a numbered step
      heading (stageCard, stepFlow, and any future generator that reuses this
@@ -444,7 +500,7 @@
   .reveal{
     opacity: 0;
     transform: translateY(18px);
-    transition: opacity .7s cubic-bezier(0.16,1,0.3,1), transform .7s cubic-bezier(0.16,1,0.3,1);
+    transition: opacity .4s cubic-bezier(0.16,1,0.3,1), transform .4s cubic-bezier(0.16,1,0.3,1);
     transition-delay: var(--reveal-delay, 0ms);
     will-change: opacity, transform;
   }
@@ -886,14 +942,14 @@
       <div class="reveal inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-6 bg-forest-500/8 px-4 py-1.5 rounded-full">
         <i class="fa-solid fa-location-dot text-[11px]"></i> Haryana Industrial &amp; Subsidy Advisory
       </div>
-      <h1 class="reveal text-[44px] sm:text-[56px] md:text-[68px] leading-[1.04] font-semibold text-navy-900 tracking-tighter2" style="--reveal-delay:80ms">
+      <h1 class="reveal text-[44px] sm:text-[56px] md:text-[68px] leading-[1.04] font-semibold text-navy-900 tracking-tighter2" style="--reveal-delay:40ms">
         Turning Haryana's<br><span class="gold-text">Industrial Ambition</span><br>Into Bankable Reality
       </h1>
-      <p class="reveal mt-7 text-fog text-[19px] leading-relaxed max-w-lg" style="--reveal-delay:160ms">
+      <p class="reveal mt-7 text-fog text-[19px] leading-relaxed max-w-lg" style="--reveal-delay:80ms">
         Barkat &amp; Co. structures the subsidy claims, project reports, and regulatory clearances that carry a manufacturing, warehousing or agro-processing unit from sanctioned land to sanctioned capital.
       </p>
 
-      <div class="reveal mt-9 flex flex-wrap items-center gap-4" style="--reveal-delay:240ms">
+      <div class="reveal mt-9 flex flex-wrap items-center gap-4" style="--reveal-delay:120ms">
         <button data-open-modal class="btn-gold font-semibold px-7 py-3.5 rounded-full flex items-center gap-2 text-[15px]">
           <i class="fa-regular fa-calendar-check"></i> Book Free Consultation
         </button>
@@ -934,7 +990,7 @@
 <section id="services" class="py-12 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto sm:px-6 px-0">
     <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center px-6 sm:px-0">What We Handle</p>
-    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-8 sm:mb-14 max-w-2xl mx-auto px-6 sm:px-0" style="--reveal-delay:80ms">Core Services</h2>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-8 sm:mb-14 max-w-2xl mx-auto px-6 sm:px-0" style="--reveal-delay:40ms">Core Services</h2>
     <div id="help-grid" class="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none gap-4 sm:gap-6 px-6 sm:px-0 pb-2 sm:pb-0 sm:grid-cols-2 lg:grid-cols-3" style="scrollbar-width:none;"</div>
     <div id="help-grid-dots" class="flex sm:hidden items-center justify-center gap-1.5 mt-4"></div>
   </div>
@@ -950,7 +1006,7 @@
     { icon:'fa-chart-line',       title:'IPO Advisory',             text:'Barkat & Co. guides promoters through Main Board & SME IPO listings from readiness to compliance.', slug:'ipo-advisory' }
   ];
   document.getElementById('help-grid').innerHTML = HELP_CARDS.map((c, i) => `
-    <div class="help-card reveal flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white" style="--reveal-delay:${(i % 3) * 90}ms">
+    <div class="help-card reveal flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white" style="--reveal-delay:${(i % 3) * 45}ms">
       <div class="w-16 h-16 rounded-2xl bg-navy-900/5 flex items-center justify-center mb-5">
         <i class="fa-solid ${c.icon} text-navy-800 text-2xl"></i>
       </div>
@@ -987,8 +1043,8 @@
 <section id="calculator" class="py-12 md:py-24 tint-gold">
   <div class="max-w-7xl mx-auto px-6">
     <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Plan Your Numbers</p>
-    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:80ms">Subsidy Calculator</h2>
-    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-12" style="--reveal-delay:160ms">
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:40ms">Subsidy Calculator</h2>
+    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-12" style="--reveal-delay:80ms">
       Select your sector and proposed capital investment to see an indicative subsidy / grant recovery range.
       This is a preliminary estimate &mdash; final eligibility depends on scheme guidelines and project specifics.
     </p>
@@ -1191,7 +1247,7 @@
 <section id="process" class="py-12 md:py-24 tint-green">
   <div class="max-w-7xl mx-auto sm:px-6 px-0">
     <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 px-6 sm:px-0">How We Help</p>
-    <h2 class="reveal text-[34px] md:text-[42px] font-semibold text-navy-900 tracking-tighter2 mb-8 md:mb-14 max-w-2xl px-6 sm:px-0" style="--reveal-delay:80ms">From First Call To Sanctioned Subsidy</h2>
+    <h2 class="reveal text-[34px] md:text-[42px] font-semibold text-navy-900 tracking-tighter2 mb-8 md:mb-14 max-w-2xl px-6 sm:px-0" style="--reveal-delay:40ms">From First Call To Sanctioned Subsidy</h2>
 
     <div id="process-steps" class="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none gap-6 pb-2 md:pb-0 md:grid-cols-4" style="scrollbar-width:none;">
       <div class="reveal flex-none w-[68%] md:w-auto snap-start pl-6 md:pl-0" style="--reveal-delay:0ms">
@@ -1199,17 +1255,17 @@
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Eligibility Review</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">We map your sector, block category, and investment scale against every live scheme.</p>
       </div>
-      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:90ms">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:45ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">02</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">DPR &amp; Modeling</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">A bank-appraisal-grade Detailed Project Report is built, with financials stress-tested.</p>
       </div>
-      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:180ms">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:90ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">03</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Filing &amp; Clearances</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">Statutory approvals, licenses, and subsidy claims are filed and tracked to disposal.</p>
       </div>
-      <div class="reveal flex-none w-[68%] md:w-auto snap-start pr-6 md:pr-0" style="--reveal-delay:270ms">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start pr-6 md:pr-0" style="--reveal-delay:135ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">04</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Disbursement</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">We stay engaged through sanction and disbursement, closing every compliance loop.</p>
@@ -1242,8 +1298,8 @@
 <section id="updates" class="py-8 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto px-6">
     <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">From Our Desk</p>
-    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:80ms">Latest Updates &amp; Insights</h2>
-    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-14" style="--reveal-delay:160ms">
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:40ms">Latest Updates &amp; Insights</h2>
+    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-14" style="--reveal-delay:80ms">
       Scheme changes, filing windows, and notes from our advisory desk &mdash; published directly by our team.
     </p>
 
@@ -1402,7 +1458,7 @@
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     container.innerHTML = items.slice(0, MAX_UPDATES).map((item, i) => (
-      '<article class="update-card reveal" style="--reveal-delay:' + ((i % 3) * 90) + 'ms">' +
+      '<article class="update-card reveal" style="--reveal-delay:' + ((i % 3) * 45) + 'ms">' +
         (item.category ? '<span class="update-card__badge">' + escapeHTML(item.category) + '</span>' : '') +
         (item.date ? '<p class="update-card__date">' + escapeHTML(formatDate(item.date)) + '</p>' : '') +
         '<h3 class="update-card__title">' + escapeHTML(item.title || 'Untitled update') + '</h3>' +
@@ -1469,7 +1525,7 @@
             <p class="text-[22px] md:text-[24px] font-semibold text-navy-900 mb-1.5 tracking-tight">End-to-End</p>
             <p class="text-[13px] text-fog leading-relaxed">Complete lifecycle execution from DPR to disbursal</p>
           </div>
-          <div class="reveal stat-callout stat-callout--secondary rounded-2xl border border-hair bg-mist p-6" style="--reveal-delay:80ms">
+          <div class="reveal stat-callout stat-callout--secondary rounded-2xl border border-hair bg-mist p-6" style="--reveal-delay:40ms">
             <p class="text-[28px] font-semibold mb-1.5 tracking-tight" style="color:#A9821B;"><span class="stat-count" data-count-target="4">4</span></p>
             <p class="text-[13px] text-fog leading-relaxed">Sectors actively served</p>
           </div>
@@ -1477,7 +1533,7 @@
       </div>
 
       <!-- Right column: stylized highlight quote -->
-      <div class="reveal rounded-3xl p-10 md:p-12 text-white" style="--reveal-delay:140ms; background:linear-gradient(135deg,#0B4619,#123c22);">
+      <div class="reveal rounded-3xl p-10 md:p-12 text-white" style="--reveal-delay:70ms; background:linear-gradient(135deg,#0B4619,#123c22);">
         <i class="fa-solid fa-quote-left text-[28px]" style="color:#C5A059;"></i>
         <p class="text-[21px] md:text-[25px] font-semibold leading-snug mt-6 mb-6">
           &ldquo;The clause was always in our favour. Nobody had filed for it correctly.&rdquo;
@@ -1555,7 +1611,7 @@
       </div>
 
       <!-- Right column: engagement form -->
-      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10" style="--reveal-delay:140ms">
+      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10" style="--reveal-delay:70ms">
         <form id="engagement-form">
           <div class="grid sm:grid-cols-2 gap-6 mb-6">
             <div>
@@ -1667,8 +1723,8 @@
         setTimeout(function(){
           submitBtn.classList.remove('is-success');
           submitLabel.textContent = DEFAULT_LABEL;
-        }, 3000);
-      }, 700);
+        }, 2000);
+      }, 400);
     });
   })();
 </script>
@@ -1677,7 +1733,7 @@
 <section id="hours-location" class="py-8 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto px-6">
     <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Visit Or Call Us</p>
-    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-14 max-w-2xl mx-auto" style="--reveal-delay:80ms">Hours &amp; Location</h2>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-14 max-w-2xl mx-auto" style="--reveal-delay:40ms">Hours &amp; Location</h2>
 
     <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
 
@@ -1719,7 +1775,7 @@
       </div>
 
       <!-- Right column: Location -->
-      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col" style="--reveal-delay:120ms">
+      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col" style="--reveal-delay:60ms">
         <div class="flex items-center gap-3 mb-6">
           <span class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(197,160,89,0.14);">
             <i class="fa-solid fa-location-dot text-gold-600 text-lg"></i>
@@ -1828,13 +1884,70 @@
   </div>
 </div>
 
-<!-- ============ FLOATING WHATSAPP ============ -->
-<a href="https://wa.me/919700000831" target="_blank" rel="noopener"
-  class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-forest-500 hover:bg-forest-700 flex items-center justify-center shadow-xl transition-all hover:scale-105"
-  style="transition-timing-function:cubic-bezier(0.16,1,0.3,1)"
-  aria-label="Chat with us on WhatsApp">
-  <i class="fa-brands fa-whatsapp text-2xl text-white"></i>
-</a>
+<!-- ============ FLOATING CONTACT PILL ============ -->
+<div id="fab-contact" class="fixed bottom-6 right-6 z-40 flex flex-col items-center">
+
+  <!-- Expands upward from the toggle button; segments stacked in one
+       rounded "pill" rather than separate floating circles. -->
+  <div id="fab-contact-pill" class="w-14 bg-white rounded-full shadow-xl overflow-hidden flex flex-col items-center" role="menu">
+    <a href="tel:+919700000831" class="fab-pill-item" role="menuitem" aria-label="Call us">
+      <i class="fa-solid fa-phone"></i>
+    </a>
+    <a href="sms:+919700000831" class="fab-pill-item" role="menuitem" aria-label="Message us">
+      <i class="fa-solid fa-comment-dots"></i>
+    </a>
+    <a href="mailto:barkatconsultancy07@gmail.com" class="fab-pill-item" role="menuitem" aria-label="Email us">
+      <i class="fa-solid fa-envelope"></i>
+    </a>
+    <a href="https://wa.me/919700000831" target="_blank" rel="noopener" class="fab-pill-item" role="menuitem" aria-label="Chat with us on WhatsApp">
+      <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i>
+    </a>
+  </div>
+
+  <button id="fab-toggle" type="button" aria-label="Contact us" aria-haspopup="true" aria-expanded="false"
+    class="w-14 h-14 rounded-full bg-forest-500 hover:bg-forest-700 flex items-center justify-center shadow-xl transition-all hover:scale-105"
+    style="transition-timing-function:cubic-bezier(0.16,1,0.3,1)">
+    <i class="fa-solid fa-headset text-2xl text-white fab-icon-default"></i>
+    <i class="fa-solid fa-xmark text-2xl text-white fab-icon-close" style="display:none;"></i>
+  </button>
+</div>
+<script>
+  (function(){
+    const wrap = document.getElementById('fab-contact');
+    const toggle = document.getElementById('fab-toggle');
+    const pill = document.getElementById('fab-contact-pill');
+    if (!wrap || !toggle || !pill) return;
+
+    function isOpen(){ return wrap.classList.contains('is-open'); }
+    function openPill(){
+      wrap.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    function closePill(){
+      wrap.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function(){
+      isOpen() ? closePill() : openPill();
+    });
+
+    // Outside click / Escape closes it, same convention as the search overlay
+    // and mobile menu elsewhere on this page.
+    document.addEventListener('click', function(e){
+      if (isOpen() && !wrap.contains(e.target)) closePill();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && isOpen()) closePill();
+    });
+
+    // Picking a channel closes the pill; the tel:/sms:/mailto:/wa.me link
+    // still navigates as normal.
+    pill.querySelectorAll('a').forEach(function(link){
+      link.addEventListener('click', closePill);
+    });
+  })();
+</script>
 
 <!-- ============ APPOINTMENT MODAL ============ -->
 <div id="modal-backdrop" class="hidden fixed inset-0 z-50 bg-navy-900/40 backdrop-blur-sm items-center justify-center p-4">
@@ -2154,7 +2267,7 @@
 
   function faqSection(faqs){
     const items = faqs.map((f, i) => (
-      '<div class="reveal rounded-xl p-6" style="--reveal-delay:' + ((i % 6) * 80) + 'ms; background:#fff; border:1px solid rgba(10,23,48,0.07);">' +
+      '<div class="reveal rounded-xl p-6" style="--reveal-delay:' + ((i % 6) * 40) + 'ms; background:#fff; border:1px solid rgba(10,23,48,0.07);">' +
         '<h4 class="text-[14.5px] font-semibold mb-2 flex gap-2" style="color:' + BRAND_GREEN + '">' +
           '<span style="color:' + BRAND_GOLD + '">Q' + (i+1) + '.</span> ' + f.q +
         '</h4>' +
@@ -2250,7 +2363,7 @@
             '</div>';
           const cardBody = headerRow + '<div class="flex gap-5">' + fieldsHTML + '</div>';
           const cardClasses = 'reveal scheme-highlight-target scheme-mobile-card rounded-2xl border p-4';
-          const cardStyle = 'border-color:rgba(11,70,25,0.16); background:linear-gradient(135deg, #FFFFFF 0%, #EAF4EC 100%); --reveal-delay:' + ((i % 6) * 70) + 'ms;';
+          const cardStyle = 'border-color:rgba(11,70,25,0.16); background:linear-gradient(135deg, #FFFFFF 0%, #EAF4EC 100%); --reveal-delay:' + ((i % 6) * 35) + 'ms;';
           return pdfFolder
             ? '<a href="' + pdfFolder.replace(/\/+$/, '') + '/' + pdfSlug(title) + '.pdf" target="_blank" rel="noopener" ' +
                 'data-scheme-key="' + title.replace(/"/g, '&quot;') + '" class="' + cardClasses + ' scheme-pdf-link block" style="' + cardStyle + ' text-decoration:none;">' +
@@ -3146,7 +3259,7 @@
             observer.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+      }, { threshold: 0.08, rootMargin: '0px 0px 10% 0px' });
       return observer;
     }
 
@@ -3199,7 +3312,7 @@
         el.textContent = formatValue(el, target);
         return;
       }
-      const duration = 1400;
+      const duration = 800;
       const startTime = performance.now();
       function step(now){
         const progress = Math.min((now - startTime) / duration, 1);
@@ -3222,7 +3335,7 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.2 });
     counters.forEach(function(el){ io.observe(el); });
   })();
 </script>
