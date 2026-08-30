@@ -851,6 +851,12 @@
     opacity: 1;
   }
 </style>
+  <!-- EmailJS SDK: sends the booking form via email without a backend server -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // TODO: replace with your real EmailJS Public Key (Account -> General)
+    (function(){ if (window.emailjs) emailjs.init({ publicKey: "lCPzvBuMH5IfzmNHz" }); })();
+  </script>
 </head>
 <body class="font-sf text-ink antialiased">
 
@@ -2972,6 +2978,13 @@
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
 
   const apptForm = document.getElementById('appt-form');
+  const apptSubmitBtn = apptForm.querySelector('button[type="submit"]');
+  const apptSubmitLabel = apptSubmitBtn.innerHTML;
+
+  // TODO: replace these two with your real EmailJS Service ID and Template ID
+  const EMAILJS_SERVICE_ID  = 'service_a11lg3q';
+  const EMAILJS_TEMPLATE_ID = 'template_86yex7f';
+
   apptForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('appt-name').value.trim();
@@ -2985,18 +2998,40 @@
       return;
     }
     errorEl.classList.add('hidden');
-    document.getElementById('modal-form-wrap').classList.add('hidden');
-    const successEl = document.getElementById('modal-success');
-    successEl.classList.remove('hidden');
-    document.getElementById('appt-success-name').textContent = name;
+
     const dt = new Date(date + 'T' + time);
-    document.getElementById('appt-success-time').textContent = dt.toLocaleString('en-IN', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-    setTimeout(() => {
-      closeModal();
-      apptForm.reset();
-      document.getElementById('modal-form-wrap').classList.remove('hidden');
-      successEl.classList.add('hidden');
-    }, 4000);
+    const prettyDateTime = dt.toLocaleString('en-IN', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+
+    apptSubmitBtn.disabled = true;
+    apptSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Booking…';
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name: name,
+      phone: phone,
+      booking_date: date,
+      booking_time: time,
+      booking_datetime: prettyDateTime
+    }).then(() => {
+      document.getElementById('modal-form-wrap').classList.add('hidden');
+      const successEl = document.getElementById('modal-success');
+      successEl.classList.remove('hidden');
+      document.getElementById('appt-success-name').textContent = name;
+      document.getElementById('appt-success-time').textContent = prettyDateTime;
+      setTimeout(() => {
+        closeModal();
+        apptForm.reset();
+        document.getElementById('modal-form-wrap').classList.remove('hidden');
+        successEl.classList.add('hidden');
+        apptSubmitBtn.disabled = false;
+        apptSubmitBtn.innerHTML = apptSubmitLabel;
+      }, 4000);
+    }).catch((err) => {
+      console.error('EmailJS error:', err);
+      apptSubmitBtn.disabled = false;
+      apptSubmitBtn.innerHTML = apptSubmitLabel;
+      errorEl.textContent = 'Something went wrong sending your booking. Please try again or call us directly.';
+      errorEl.classList.remove('hidden');
+    });
   });
 
   const calcForm = document.getElementById('calc-form');
