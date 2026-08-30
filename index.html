@@ -381,6 +381,29 @@
   }
 
   /* ==========================================================================
+     SCROLL REVEAL — subtle fade + rise as sections enter the viewport.
+     Deliberately understated (consulting/advisory site: this should read as
+     "considered", not "flashy"). Driven by IntersectionObserver in
+     initScrollReveal() near the bottom of the page; safe to call repeatedly
+     on any newly-injected content (help-grid cards, updates cards, dynamic
+     sub-pages via showPage()/renderPageBody()).
+     ========================================================================== */
+  .reveal{
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s cubic-bezier(0.16,1,0.3,1), transform .7s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal-visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1; transform:none; transition:none; }
+  }
+
+  /* ==========================================================================
      DYNAMIC SUB-PAGE LAYOUT & TYPOGRAPHY OVERRIDES
      Scope: #page-view — every dynamically-rendered topic page (MSME
      Subsidy, Statutory Approvals, Licenses & Certificates, Industrial
@@ -676,6 +699,20 @@
     display: block;
     opacity: 1;
   }
+  /* Home icon (mobile utility row): hidden while the header is in its big
+     first-paint state, revealed once it shrinks on scroll — sits between
+     the logo and the search icon, matching the shrink/expand timing above. */
+  #home-icon-mobile{
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  #site-nav:not(.nav-big) #home-icon-mobile{
+    display: flex;
+    opacity: 1;
+  }
 </style>
 </head>
 <body class="font-sf text-ink antialiased">
@@ -733,6 +770,10 @@
       </div>
 
       <div class="flex xl:hidden items-center gap-1">
+        <a href="#top" id="home-icon-mobile" aria-label="Home" class="w-9 h-9 text-navy-900 text-[18px]">
+          <i class="fa-solid fa-house"></i>
+        </a>
+
         <button id="search-trigger-mobile" type="button" aria-label="Search the site"
           class="w-9 h-9 flex items-center justify-center text-navy-900 text-[18px]">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -789,17 +830,17 @@
 <section id="top" class="relative overflow-hidden pt-8 pb-12 md:pt-28 md:pb-32" style="background: radial-gradient(1100px 560px at 18% -8%, rgba(46,125,79,0.10), transparent 60%), radial-gradient(900px 480px at 108% 12%, rgba(201,162,39,0.12), transparent 55%), #FFFFFF;">
   <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-[1.1fr,0.9fr] gap-16 items-center">
     <div>
-      <div class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-6 bg-forest-500/8 px-4 py-1.5 rounded-full">
+      <div class="reveal inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-6 bg-forest-500/8 px-4 py-1.5 rounded-full">
         <i class="fa-solid fa-location-dot text-[11px]"></i> Haryana Industrial &amp; Subsidy Advisory
       </div>
-      <h1 class="text-[44px] sm:text-[56px] md:text-[68px] leading-[1.04] font-semibold text-navy-900 tracking-tighter2">
+      <h1 class="reveal text-[44px] sm:text-[56px] md:text-[68px] leading-[1.04] font-semibold text-navy-900 tracking-tighter2" style="--reveal-delay:80ms">
         Turning Haryana's<br><span class="gold-text">Industrial Ambition</span><br>Into Bankable Reality
       </h1>
-      <p class="mt-7 text-fog text-[19px] leading-relaxed max-w-lg">
+      <p class="reveal mt-7 text-fog text-[19px] leading-relaxed max-w-lg" style="--reveal-delay:160ms">
         Barkat &amp; Co. structures the subsidy claims, project reports, and regulatory clearances that carry a manufacturing, warehousing or agro-processing unit from sanctioned land to sanctioned capital.
       </p>
 
-      <div class="mt-9 flex flex-wrap items-center gap-4">
+      <div class="reveal mt-9 flex flex-wrap items-center gap-4" style="--reveal-delay:240ms">
         <button data-open-modal class="btn-gold font-semibold px-7 py-3.5 rounded-full flex items-center gap-2 text-[15px]">
           <i class="fa-regular fa-calendar-check"></i> Book Free Consultation
         </button>
@@ -839,8 +880,8 @@
 <!-- ============ CORE SERVICES GRID (5-card grid, data-driven) ============ -->
 <section id="services" class="py-12 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto sm:px-6 px-0">
-    <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center px-6 sm:px-0">What We Handle</p>
-    <h2 class="text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-8 sm:mb-14 max-w-2xl mx-auto px-6 sm:px-0">Core Services</h2>
+    <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center px-6 sm:px-0">What We Handle</p>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-8 sm:mb-14 max-w-2xl mx-auto px-6 sm:px-0" style="--reveal-delay:80ms">Core Services</h2>
     <div id="help-grid" class="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none gap-4 sm:gap-6 px-6 sm:px-0 pb-2 sm:pb-0 sm:grid-cols-2 lg:grid-cols-3" style="scrollbar-width:none;"</div>
     <div id="help-grid-dots" class="flex sm:hidden items-center justify-center gap-1.5 mt-4"></div>
   </div>
@@ -855,8 +896,8 @@
     { icon:'fa-building-columns', title:'Finance & Other Services', text:'Barkat & Co. offers expert finance and other services to help small businesses grow.', slug:'finance-and-other-services' },
     { icon:'fa-chart-line',       title:'IPO Advisory',             text:'Barkat & Co. guides promoters through Main Board & SME IPO listings from readiness to compliance.', slug:'ipo-advisory' }
   ];
-  document.getElementById('help-grid').innerHTML = HELP_CARDS.map(c => `
-    <div class="help-card flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white">
+  document.getElementById('help-grid').innerHTML = HELP_CARDS.map((c, i) => `
+    <div class="help-card reveal flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white" style="--reveal-delay:${(i % 3) * 90}ms">
       <div class="w-16 h-16 rounded-2xl bg-navy-900/5 flex items-center justify-center mb-5">
         <i class="fa-solid ${c.icon} text-navy-800 text-2xl"></i>
       </div>
@@ -866,6 +907,7 @@
         Explore <i class="fa-solid fa-circle-arrow-right"></i>
       </a>
     </div>`).join('');
+  if (window.initScrollReveal) window.initScrollReveal();
 
   // Dot indicators for the mobile swipe view; hidden entirely at sm+ via the
   // "hidden sm:hidden" wrapper class above, so this only matters on phones.
@@ -891,9 +933,9 @@
 <!-- ============ SUBSIDY CALCULATOR ============ -->
 <section id="calculator" class="py-12 md:py-24 tint-gold">
   <div class="max-w-7xl mx-auto px-6">
-    <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Plan Your Numbers</p>
-    <h2 class="text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto">Subsidy Calculator</h2>
-    <p class="text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-12">
+    <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Plan Your Numbers</p>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:80ms">Subsidy Calculator</h2>
+    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-12" style="--reveal-delay:160ms">
       Select your sector and proposed capital investment to see an indicative subsidy / grant recovery range.
       This is a preliminary estimate &mdash; final eligibility depends on scheme guidelines and project specifics.
     </p>
@@ -1095,26 +1137,26 @@
 <!-- ============ HOW WE HELP / PROCESS STEPS ============ -->
 <section id="process" class="py-12 md:py-24 tint-green">
   <div class="max-w-7xl mx-auto sm:px-6 px-0">
-    <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 px-6 sm:px-0">How We Help</p>
-    <h2 class="text-[34px] md:text-[42px] font-semibold text-navy-900 tracking-tighter2 mb-8 md:mb-14 max-w-2xl px-6 sm:px-0">From First Call To Sanctioned Subsidy</h2>
+    <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 px-6 sm:px-0">How We Help</p>
+    <h2 class="reveal text-[34px] md:text-[42px] font-semibold text-navy-900 tracking-tighter2 mb-8 md:mb-14 max-w-2xl px-6 sm:px-0" style="--reveal-delay:80ms">From First Call To Sanctioned Subsidy</h2>
 
     <div id="process-steps" class="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none gap-6 pb-2 md:pb-0 md:grid-cols-4" style="scrollbar-width:none;">
-      <div class="flex-none w-[68%] md:w-auto snap-start pl-6 md:pl-0">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start pl-6 md:pl-0" style="--reveal-delay:0ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">01</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Eligibility Review</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">We map your sector, block category, and investment scale against every live scheme.</p>
       </div>
-      <div class="flex-none w-[68%] md:w-auto snap-start">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:90ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">02</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">DPR &amp; Modeling</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">A bank-appraisal-grade Detailed Project Report is built, with financials stress-tested.</p>
       </div>
-      <div class="flex-none w-[68%] md:w-auto snap-start">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start" style="--reveal-delay:180ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">03</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Filing &amp; Clearances</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">Statutory approvals, licenses, and subsidy claims are filed and tracked to disposal.</p>
       </div>
-      <div class="flex-none w-[68%] md:w-auto snap-start pr-6 md:pr-0">
+      <div class="reveal flex-none w-[68%] md:w-auto snap-start pr-6 md:pr-0" style="--reveal-delay:270ms">
         <p class="text-[42px] font-semibold text-gold-500/30 mb-3">04</p>
         <h3 class="text-[17px] font-semibold text-navy-900 mb-2">Disbursement</h3>
         <p class="text-fog text-[14.5px] leading-relaxed">We stay engaged through sanction and disbursement, closing every compliance loop.</p>
@@ -1146,9 +1188,9 @@
 <!-- ============ LATEST UPDATES & INSIGHTS (Google Sheets–driven) ============ -->
 <section id="updates" class="py-8 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto px-6">
-    <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">From Our Desk</p>
-    <h2 class="text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto">Latest Updates &amp; Insights</h2>
-    <p class="text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-14">
+    <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">From Our Desk</p>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-4 max-w-2xl mx-auto" style="--reveal-delay:80ms">Latest Updates &amp; Insights</h2>
+    <p class="reveal text-fog text-[14.5px] leading-relaxed text-center max-w-xl mx-auto mb-14" style="--reveal-delay:160ms">
       Scheme changes, filing windows, and notes from our advisory desk &mdash; published directly by our team.
     </p>
 
@@ -1306,14 +1348,15 @@
     // Most recent first, when the Date column parses as a real date.
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    container.innerHTML = items.slice(0, MAX_UPDATES).map(item => (
-      '<article class="update-card">' +
+    container.innerHTML = items.slice(0, MAX_UPDATES).map((item, i) => (
+      '<article class="update-card reveal" style="--reveal-delay:' + ((i % 3) * 90) + 'ms">' +
         (item.category ? '<span class="update-card__badge">' + escapeHTML(item.category) + '</span>' : '') +
         (item.date ? '<p class="update-card__date">' + escapeHTML(formatDate(item.date)) + '</p>' : '') +
         '<h3 class="update-card__title">' + escapeHTML(item.title || 'Untitled update') + '</h3>' +
         '<p class="update-card__snippet">' + escapeHTML(item.content) + '</p>' +
       '</article>'
     )).join('');
+    if (window.initScrollReveal) window.initScrollReveal(container);
   }
 
   function renderError(message){
@@ -1361,7 +1404,7 @@
     <div class="hidden lg:grid grid-cols-2 gap-14 items-center">
 
       <!-- Left column: narrative + stat callouts -->
-      <div>
+      <div class="reveal">
         <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3">About Barkat &amp; Co.</p>
         <h2 class="text-[32px] md:text-[40px] font-semibold text-navy-900 tracking-tighter2 mb-5 leading-tight max-w-lg">An Advisory Desk Built For Haryana&rsquo;s Industrial Corridor</h2>
         <p class="text-fog text-[15px] leading-relaxed max-w-lg mb-10">
@@ -1381,7 +1424,7 @@
       </div>
 
       <!-- Right column: stylized highlight quote -->
-      <div class="rounded-3xl p-10 md:p-12 text-white" style="background:linear-gradient(135deg,#0B4619,#123c22);">
+      <div class="reveal rounded-3xl p-10 md:p-12 text-white" style="--reveal-delay:140ms; background:linear-gradient(135deg,#0B4619,#123c22);">
         <i class="fa-solid fa-quote-left text-[28px]" style="color:#C5A059;"></i>
         <p class="text-[21px] md:text-[25px] font-semibold leading-snug mt-6 mb-6">
           &ldquo;The clause was always in our favour. Nobody had filed for it correctly.&rdquo;
@@ -1395,7 +1438,7 @@
 
     <!-- Mobile layout (below lg) — compact stat boxes tucked beside a
          smaller quote card, instead of everything stacking full-width. -->
-    <div class="lg:hidden">
+    <div class="reveal lg:hidden">
       <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3">About Barkat &amp; Co.</p>
       <h2 class="text-[28px] font-semibold text-navy-900 tracking-tighter2 mb-4 leading-tight">An Advisory Desk Built For Haryana&rsquo;s Industrial Corridor</h2>
       <p class="text-fog text-[14.5px] leading-relaxed mb-5">
@@ -1435,7 +1478,7 @@
     <div class="grid lg:grid-cols-[1fr,1.15fr] gap-14 items-start">
 
       <!-- Left column: intro + contact details -->
-      <div>
+      <div class="reveal">
         <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3">Start An Engagement</p>
         <h2 class="text-[32px] md:text-[42px] font-semibold text-navy-900 tracking-tighter2 mb-5 leading-tight">Tell Us About The Project</h2>
         <p class="text-fog text-[15px] leading-relaxed max-w-md mb-10">
@@ -1459,7 +1502,7 @@
       </div>
 
       <!-- Right column: engagement form -->
-      <div class="rounded-3xl border border-hair bg-white p-8 md:p-10">
+      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10" style="--reveal-delay:140ms">
         <form id="engagement-form">
           <div class="grid sm:grid-cols-2 gap-6 mb-6">
             <div>
@@ -1543,13 +1586,13 @@
 <!-- ============ HOURS & LOCATION ============ -->
 <section id="hours-location" class="py-8 md:py-24 tint-blue">
   <div class="max-w-7xl mx-auto px-6">
-    <p class="text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Visit Or Call Us</p>
-    <h2 class="text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-14 max-w-2xl mx-auto">Hours &amp; Location</h2>
+    <p class="reveal text-[12px] uppercase tracking-[0.2em] text-forest-600 font-semibold mb-3 text-center">Visit Or Call Us</p>
+    <h2 class="reveal text-[30px] md:text-[38px] font-semibold text-navy-900 text-center tracking-tighter2 mb-14 max-w-2xl mx-auto" style="--reveal-delay:80ms">Hours &amp; Location</h2>
 
     <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
 
       <!-- Left column: Hours -->
-      <div class="rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col">
+      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col">
         <div class="flex items-center gap-3 mb-6">
           <span class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(46,125,79,0.10);">
             <i class="fa-regular fa-clock text-forest-600 text-lg"></i>
@@ -1586,7 +1629,7 @@
       </div>
 
       <!-- Right column: Location -->
-      <div class="rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col">
+      <div class="reveal rounded-3xl border border-hair bg-white p-8 md:p-10 flex flex-col" style="--reveal-delay:120ms">
         <div class="flex items-center gap-3 mb-6">
           <span class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(197,160,89,0.14);">
             <i class="fa-solid fa-location-dot text-gold-600 text-lg"></i>
@@ -2578,6 +2621,7 @@
     pageView.classList.remove('hidden');
     if (mobileMenuEl && !mobileMenuEl.classList.contains('hidden')) mobileMenuEl.classList.add('hidden');
     window.scrollTo(0, 0);
+    if (window.initScrollReveal) window.initScrollReveal(pageView);
   }
 
   function showHome(){
@@ -2988,6 +3032,53 @@
     if (item) goToResult(item);
   });
 })();
+</script>
+
+<script>
+  /* ==========================================================================
+     SCROLL REVEAL — fade + subtle rise as content enters the viewport.
+     Elements opt in via class="reveal" (optionally with an inline
+     style="--reveal-delay:Nms" for staggering within a group). Safe to call
+     window.initScrollReveal() again after injecting new markup (help-grid
+     cards, "Latest Updates" cards, dynamic sub-pages via showPage()) — it
+     only observes elements it hasn't already armed.
+     ========================================================================== */
+  (function(){
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let observer = null;
+
+    function ensureObserver(){
+      if (observer || reduceMotion) return observer;
+      observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){
+            entry.target.classList.add('reveal-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+      return observer;
+    }
+
+    window.initScrollReveal = function(root){
+      const scope = root || document;
+      const els = scope.querySelectorAll('.reveal:not([data-reveal-armed])');
+      if (!els.length) return;
+      if (reduceMotion){
+        els.forEach(function(el){ el.dataset.revealArmed = '1'; el.classList.add('reveal-visible'); });
+        return;
+      }
+      const io = ensureObserver();
+      els.forEach(function(el){
+        el.dataset.revealArmed = '1';
+        io.observe(el);
+      });
+    };
+
+    document.addEventListener('DOMContentLoaded', function(){
+      window.initScrollReveal();
+    });
+  })();
 </script>
 </body>
 </html>
