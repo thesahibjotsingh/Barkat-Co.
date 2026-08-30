@@ -1782,6 +1782,11 @@
 
     const DEFAULT_LABEL = submitLabel.textContent;
 
+    // Reuses the same EmailJS service already connected for the booking
+    // modal; this form has its own template since the fields differ.
+    const EMAILJS_SERVICE_ID = 'service_a11lg3q';
+    const EMAILJS_TEMPLATE_ID = 'template_kmcozau';
+
     // Inline feedback: flag a required field the moment the person leaves it
     // empty/invalid, and clear that flag as soon as they start correcting it —
     // rather than only surfacing errors on submit.
@@ -1805,24 +1810,51 @@
         return;
       }
 
-      // No backend wired up yet — the brief loading state gives the tap/click
-      // tactile feedback before acknowledging receipt client-side.
+      const name = document.getElementById('eng-name').value.trim();
+      const phone = document.getElementById('eng-phone').value.trim();
+      const email = document.getElementById('eng-email').value.trim();
+      const sector = document.getElementById('eng-sector').value;
+      const scope = document.getElementById('eng-scope').value;
+      const details = document.getElementById('eng-details').value.trim();
+
       submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
       submitLabel.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>Sending...';
 
-      setTimeout(function(){
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        phone: phone,
+        email: email,
+        sector: sector,
+        scope: scope,
+        details: details || 'Not provided'
+      }).then(function(){
         submitBtn.classList.remove('is-loading');
         submitBtn.classList.add('is-success');
+        submitBtn.disabled = false;
         submitLabel.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>Request Received';
 
         confirmMsg.classList.remove('hidden');
+        confirmMsg.classList.remove('text-red-500');
+        confirmMsg.classList.add('text-forest-600');
+        confirmMsg.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>Thank you — we\'ve received your details and will be in touch within one business day.';
         form.reset();
 
         setTimeout(function(){
           submitBtn.classList.remove('is-success');
           submitLabel.textContent = DEFAULT_LABEL;
         }, 2000);
-      }, 400);
+      }).catch(function(err){
+        console.error('EmailJS error:', err);
+        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false;
+        submitLabel.textContent = DEFAULT_LABEL;
+
+        confirmMsg.classList.remove('hidden');
+        confirmMsg.classList.remove('text-forest-600');
+        confirmMsg.classList.add('text-red-500');
+        confirmMsg.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Something went wrong sending your request. Please try again or call us directly.';
+      });
     });
   })();
 </script>
