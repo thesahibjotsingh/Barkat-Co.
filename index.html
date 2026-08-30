@@ -153,7 +153,34 @@
   #fab-contact.is-open .fab-pill-item:nth-child(3){ transition-delay: 45ms; }
   #fab-contact.is-open .fab-pill-item:nth-child(4){ transition-delay: 60ms; }
   #fab-toggle{
+    position: relative;
+    overflow: hidden;
     transition: background-color .2s ease, transform .2s cubic-bezier(0.16,1,0.3,1);
+  }
+  #fab-toggle i{
+    position: relative;
+    z-index: 1;
+  }
+  #fab-toggle::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-20deg);
+    animation: fab-shine 3.6s ease-in-out infinite;
+    animation-delay: 1.5s;
+    pointer-events: none;
+  }
+  #fab-contact.is-open #fab-toggle::before{
+    display: none;
+  }
+  @keyframes fab-shine{
+    0%{ left: -75%; }
+    35%{ left: 130%; }
+    100%{ left: 130%; }
   }
   #fab-contact.is-open #fab-toggle{
     background-color: #0A1730;
@@ -165,6 +192,7 @@
   #fab-contact.is-open #fab-toggle .fab-icon-close{ display: block !important; }
   @media (prefers-reduced-motion: reduce){
     #fab-contact-pill, .fab-pill-item{ transition: none; }
+    #fab-toggle::before{ animation: none; display: none; }
   }
 
   /* ==========================================================================
@@ -1005,17 +1033,29 @@
     { icon:'fa-building-columns', title:'Finance & Other Services', text:'Barkat & Co. offers expert finance and other services to help small businesses grow.', slug:'finance-and-other-services' },
     { icon:'fa-chart-line',       title:'IPO Advisory',             text:'Barkat & Co. guides promoters through Main Board & SME IPO listings from readiness to compliance.', slug:'ipo-advisory' }
   ];
-  document.getElementById('help-grid').innerHTML = HELP_CARDS.map((c, i) => `
+  document.getElementById('help-grid').innerHTML = HELP_CARDS.map((c, i) => {
+    // Cycles through the three brand accents so the grid reads as a coherent
+    // set rather than one flat gray badge repeated six times. Each tint is a
+    // soft white -> brand-color diagonal wash (not a flat fill) so it stays
+    // gentle against the white card rather than looking like a solid chip.
+    const TINTS = [
+      { bg: 'linear-gradient(135deg, #ffffff 0%, rgba(46,125,79,0.16) 100%)',  icon: '#1F5C3C' },  // forest green
+      { bg: 'linear-gradient(135deg, #ffffff 0%, rgba(51,87,140,0.16) 100%)',  icon: '#1B3A63' },  // navy blue
+      { bg: 'linear-gradient(135deg, #ffffff 0%, rgba(201,162,39,0.20) 100%)', icon: '#A9821B' }   // gold
+    ];
+    const tint = TINTS[i % TINTS.length];
+    return `
     <div class="help-card reveal flex-none w-[78%] sm:w-auto snap-start hover-lift card-soft rounded-3xl p-8 text-center flex flex-col items-center bg-white" style="--reveal-delay:${(i % 3) * 45}ms">
-      <div class="w-16 h-16 rounded-2xl bg-navy-900/5 flex items-center justify-center mb-5">
-        <i class="fa-solid ${c.icon} text-navy-800 text-2xl"></i>
+      <div class="w-28 h-28 rounded-2xl flex items-center justify-center mb-5" style="background:${tint.bg};">
+        <i class="fa-solid ${c.icon} text-5xl" style="color:${tint.icon};"></i>
       </div>
       <h3 class="text-[17px] font-semibold text-navy-900 mb-2">${c.title}</h3>
       <p class="text-fog text-[14.5px] leading-relaxed mb-6">${c.text}</p>
       <a data-slugpath="${c.slug}" class="menu-link btn-gold font-semibold text-[14px] px-5 py-2.5 rounded-full inline-flex items-center gap-2 mt-auto" href="#${c.slug}">
         Explore <i class="fa-solid fa-circle-arrow-right"></i>
       </a>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   if (window.initScrollReveal) window.initScrollReveal();
 
   // Dot indicators for the mobile swipe view; hidden entirely at sm+ via the
