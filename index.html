@@ -850,6 +850,58 @@
     display: flex;
     opacity: 1;
   }
+
+  /* ---- Booking modal: fix native date/time input rendering ----
+     iOS/Android render an internal white box for the picker segments
+     that ignores our background/border, producing a mismatched seam
+     down the middle of the field. Forcing these internal pseudo-parts
+     to be transparent lets our own background/border show through. */
+  #appt-form input[type="date"],
+  #appt-form input[type="time"]{
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #appt-form input[type="date"]::-webkit-datetime-edit,
+  #appt-form input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  #appt-form input[type="date"]::-webkit-datetime-edit-text,
+  #appt-form input[type="date"]::-webkit-datetime-edit-month-field,
+  #appt-form input[type="date"]::-webkit-datetime-edit-day-field,
+  #appt-form input[type="date"]::-webkit-datetime-edit-year-field,
+  #appt-form input[type="time"]::-webkit-datetime-edit,
+  #appt-form input[type="time"]::-webkit-datetime-edit-fields-wrapper,
+  #appt-form input[type="time"]::-webkit-datetime-edit-text,
+  #appt-form input[type="time"]::-webkit-datetime-edit-hour-field,
+  #appt-form input[type="time"]::-webkit-datetime-edit-minute-field,
+  #appt-form input[type="time"]::-webkit-datetime-edit-ampm-field,
+  #appt-form input[type="date"]::-webkit-inner-spin-button,
+  #appt-form input[type="date"]::-webkit-clear-button,
+  #appt-form input[type="time"]::-webkit-inner-spin-button,
+  #appt-form input[type="time"]::-webkit-clear-button{
+    background: transparent;
+  }
+  #appt-form input[type="date"]::-webkit-calendar-picker-indicator,
+  #appt-form input[type="time"]::-webkit-calendar-picker-indicator{
+    filter: opacity(0.6);
+  }
+
+  /* ---- Booking modal: invalid-field shake + red state ---- */
+  @keyframes appt-shake{
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  #appt-form .field-shake{
+    animation: appt-shake .4s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  #appt-form .field-invalid{
+    border-color: #EF4444 !important;
+    color: #EF4444 !important;
+  }
+  #appt-form .field-invalid::placeholder{
+    color: #EF4444 !important;
+    opacity: .65;
+  }
 </style>
   <!-- EmailJS SDK: sends the booking form via email without a backend server -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -2009,11 +2061,11 @@
       <form id="appt-form" class="space-y-4" novalidate>
         <div>
           <label for="appt-name" class="block text-[11px] uppercase tracking-widest text-forest-600 font-semibold mb-2">Name</label>
-          <input id="appt-name" required type="text" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 placeholder:text-fog/60 focus:border-gold-500 outline-none" placeholder="Your name">
+          <input id="appt-name" required type="text" autocomplete="name" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 placeholder:text-fog/60 focus:border-gold-500 outline-none" placeholder="Your name">
         </div>
         <div>
           <label for="appt-phone" class="block text-[11px] uppercase tracking-widest text-forest-600 font-semibold mb-2">Phone</label>
-          <input id="appt-phone" required type="tel" pattern="[6-9][0-9]{9}" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 placeholder:text-fog/60 focus:border-gold-500 outline-none" placeholder="97XXXXXXXX">
+          <input id="appt-phone" required type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 placeholder:text-fog/60 focus:border-gold-500 outline-none" placeholder="97XXXXXXXX">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
@@ -2022,10 +2074,10 @@
           </div>
           <div>
             <label for="appt-time" class="block text-[11px] uppercase tracking-widest text-forest-600 font-semibold mb-2">Time</label>
-            <input id="appt-time" required type="time" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 focus:border-gold-500 outline-none">
+            <input id="appt-time" required type="time" min="10:00" max="18:00" class="w-full bg-mist border border-hair rounded-xl px-4 py-3 text-navy-900 focus:border-gold-500 outline-none">
           </div>
         </div>
-        <p id="appt-error" class="hidden text-xs text-red-500">Please fill in every field with a valid phone number.</p>
+        <p id="appt-error" class="hidden text-xs text-red-500">Please check the highlighted field(s) below.</p>
         <button type="submit" class="w-full btn-gold font-semibold py-3.5 rounded-xl mt-2">
           Confirm Slot
         </button>
@@ -2985,18 +3037,101 @@
   const EMAILJS_SERVICE_ID  = 'service_a11lg3q';
   const EMAILJS_TEMPLATE_ID = 'template_86yex7f';
 
+  const apptNameEl = document.getElementById('appt-name');
+  const apptPhoneEl = document.getElementById('appt-phone');
+  const apptDateEl = document.getElementById('appt-date');
+  const apptTimeEl = document.getElementById('appt-time');
+  const errorEl = document.getElementById('appt-error');
+
+  // Business rules: open Mon–Sat, 10:00–18:00. No Sundays, no times outside that window.
+  const OPEN_HOUR = 10, CLOSE_HOUR = 18;
+  function isSunday(dateStr){
+    if(!dateStr) return false;
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDay() === 0; // 0 = Sunday
+  }
+  function isWithinBusinessHours(timeStr){
+    if(!timeStr) return false;
+    const [h, m] = timeStr.split(':').map(Number);
+    const mins = h * 60 + m;
+    return mins >= OPEN_HOUR * 60 && mins <= CLOSE_HOUR * 60;
+  }
+
+  // Shake + turn red, then let the person try again.
+  function flagInvalid(el, message){
+    el.classList.remove('field-shake');
+    el.classList.add('field-invalid');
+    // Force reflow so the animation can replay on repeated invalid attempts.
+    void el.offsetWidth;
+    el.classList.add('field-shake');
+    if(message){
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+  }
+  function clearInvalid(el){
+    el.classList.remove('field-invalid', 'field-shake');
+  }
+
+  // Live sanitization: letters/spaces only in Name, digits-only (max 10) in Phone.
+  apptNameEl.addEventListener('input', () => {
+    const cleaned = apptNameEl.value.replace(/[^A-Za-z\s]/g, '');
+    if(cleaned !== apptNameEl.value) apptNameEl.value = cleaned;
+    clearInvalid(apptNameEl);
+  });
+  apptPhoneEl.addEventListener('input', () => {
+    const cleaned = apptPhoneEl.value.replace(/[^0-9]/g, '').slice(0, 10);
+    if(cleaned !== apptPhoneEl.value) apptPhoneEl.value = cleaned;
+    clearInvalid(apptPhoneEl);
+  });
+
+  // Live business-hours feedback the moment an out-of-range day/time is picked.
+  apptDateEl.addEventListener('change', () => {
+    if(isSunday(apptDateEl.value)){
+      flagInvalid(apptDateEl, "We're closed Sundays — please pick Monday to Saturday.");
+    } else {
+      clearInvalid(apptDateEl);
+      errorEl.classList.add('hidden');
+    }
+  });
+  apptTimeEl.addEventListener('change', () => {
+    if(apptTimeEl.value && !isWithinBusinessHours(apptTimeEl.value)){
+      flagInvalid(apptTimeEl, 'Office hours are 10:00 AM – 6:00 PM — please pick a time in that window.');
+    } else {
+      clearInvalid(apptTimeEl);
+      errorEl.classList.add('hidden');
+    }
+  });
+
   apptForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('appt-name').value.trim();
-    const phone = document.getElementById('appt-phone').value.trim();
-    const date = document.getElementById('appt-date').value;
-    const time = document.getElementById('appt-time').value;
+    const name = apptNameEl.value.trim();
+    const phone = apptPhoneEl.value.trim();
+    const date = apptDateEl.value;
+    const time = apptTimeEl.value;
+
+    const nameOk = /^[A-Za-z\s]{2,}$/.test(name);
     const phoneOk = /^[6-9][0-9]{9}$/.test(phone);
-    const errorEl = document.getElementById('appt-error');
-    if(!name || !phoneOk || !date || !time){
+    const dateOk = !!date && !isSunday(date);
+    const timeOk = !!time && isWithinBusinessHours(time);
+
+    if(!nameOk) flagInvalid(apptNameEl, 'Please enter a valid name using letters only.');
+    if(!phoneOk) flagInvalid(apptPhoneEl, 'Please enter a valid 10-digit phone number.');
+    if(!dateOk) flagInvalid(apptDateEl, "We're closed Sundays — please pick Monday to Saturday.");
+    if(!timeOk) flagInvalid(apptTimeEl, 'Office hours are 10:00 AM – 6:00 PM — please pick a time in that window.');
+
+    if(!nameOk || !phoneOk || !dateOk || !timeOk){
+      if(nameOk) clearInvalid(apptNameEl);
+      if(phoneOk) clearInvalid(apptPhoneEl);
+      if(dateOk) clearInvalid(apptDateEl);
+      if(timeOk) clearInvalid(apptTimeEl);
       errorEl.classList.remove('hidden');
       return;
     }
+    clearInvalid(apptNameEl);
+    clearInvalid(apptPhoneEl);
+    clearInvalid(apptDateEl);
+    clearInvalid(apptTimeEl);
     errorEl.classList.add('hidden');
 
     const dt = new Date(date + 'T' + time);
@@ -3020,6 +3155,10 @@
       setTimeout(() => {
         closeModal();
         apptForm.reset();
+        clearInvalid(apptNameEl);
+        clearInvalid(apptPhoneEl);
+        clearInvalid(apptDateEl);
+        clearInvalid(apptTimeEl);
         document.getElementById('modal-form-wrap').classList.remove('hidden');
         successEl.classList.add('hidden');
         apptSubmitBtn.disabled = false;
